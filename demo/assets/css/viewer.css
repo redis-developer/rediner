@@ -1,0 +1,82 @@
+body, main, #graph  {
+   height: 100%;
+   width: 100%;
+}
+
+body {
+   font-family: Palatino;
+   font-size: 12pt;
+}
+
+h1, h2, h3, h4, h5, h6, nav, figure figcaption, label, button {
+   font-family: Arial;
+}
+
+article.viewer{
+   width: 100%;
+   min-height: 300px;
+   height: 80%;
+}
+
+#related {
+   position: absolute;
+   top: 3em;
+   left: 10;
+   width: 20em;
+   border: 1px solid rgb(50,50,50);
+   display: none;
+   min-height: 20em;
+   background-color: rgb(255,255,255,0.75);
+   padding: 0.25em 0.25em;
+}
+
+#related a:link, #related a:link:visited {
+   color: blue;
+   text-decoration: none;
+}
+
+nav h1 {
+   display: inline;
+   font-size: 1em;
+   color: rgb(75,75,75);
+}
+
+button {
+   vertical-align: middle;
+}
+
+label {
+   font-weight: normal;
+   font-size: 0.75em;
+}
+
+input[type=range] {
+   width: 5em;
+   vertical-align: middle;
+}
+#articles p {
+   line-height: 1em;
+   margin-block-start: 0em;
+   margin-block-end: 0.125em;
+}
+
+#articles {
+   background-color: rgb(255,255,255,0.75);
+   padding: 0.25em 0.25em;
+}
+
+#articles .article {
+   margin-bottom: 0.875em;
+}
+#articles .article h4 {
+   margin-top: 0em;
+   margin-bottom: 0.5em;
+}
+#articles .article p {
+   margin-left: 2em;
+}
+
+#articles a:link, #articles a:link:visited {
+   color: blue;
+   text-decoration: none;
+}

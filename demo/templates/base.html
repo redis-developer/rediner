@@ -1,0 +1,48 @@
+<html>
+<head>
+<title>
+   {{ title|escape }}
+</title>
+
+<meta name=viewport content="width=device-width, initial-scale=0.8125"/>
+<link rel="stylesheet" type="text/css" href="{{url_for('viewer.index')}}assets/css/viewer.css"/>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.14.0/cytoscape.umd.js"></script>
+<script src="{{url_for('viewer.index')}}assets/js/viewer.js"></script>
+
+{% block head %}
+{% endblock %}
+{% block head_extras %}
+{% endblock %}
+</head>
+<body>
+{% block content %}
+<main>
+   <nav>
+      <select id = "dataset"></select>
+      <label for="min-entity">Entity</label>
+      <input id="min-entity" size="3" value="2">
+      <input type="range" id="min-entity-range" min="0" max="50" value="50">
+      <label for="min-keyword">Keyword</label>
+      <input id="min-keyword" size="3" value="1">
+      <input type="range" id="min-keyword-range" min="0" max="10" value="1">
+      <button id = "reload">Load</button>
+      <!--
+      <input id="search" size="40">
+      <button id="go-search">Search</button>
+   -->
+      <h1 id="current"></h1>
+   </nav>
+<article class="viewer">
+   <div id="graph">
+   </div>
+</article>
+<div id="articles">
+   <h1>Articles</h1>
+   <h2 class="term"></h2>
+   <div class="content"></div>
+</div>
+</main>
+{% endblock %}
+</body>
+</html>
