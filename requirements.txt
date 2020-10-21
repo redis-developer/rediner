@@ -1,0 +1,8 @@
+pyquery
+redis
+redisgraph
+flask
+spacy
+pyyaml
+dateparser
+propgraph
