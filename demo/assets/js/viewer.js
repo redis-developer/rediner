@@ -199,7 +199,7 @@ class Viewer {
          return response.json()
       }).then( (articles) => {
          $("#articles .term").empty();
-         $("#articles .term").text(keyword)
+         $("#articles .term").text(' : '+keyword)
          $("#articles .content").empty();
          articles.sort((x,y) => {
             if (y.datePublished==null) {
