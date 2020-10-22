@@ -16,11 +16,18 @@ def main(call_args=None):
    for name in args.graphs:
       g = Graph(name,r)
 
-      g.query('CREATE INDEX ON :BlogPosting(keywords)')
-      g.query('CALL db.idx.fulltext.createNodeIndex("BlogPosting","keywords")')
-      g.query('CALL db.idx.fulltext.createNodeIndex("BlogPosting","headline")')
-      g.query('CALL db.idx.fulltext.createNodeIndex("BlogPosting","description")')
-      g.query('CALL db.idx.fulltext.createNodeIndex("BlogPosting","articleBody")')
+      print('Indexes:')
+      label = 'BlogPosting'
+      for field in ['`@id`','url','keywords']:
+         print((label,field))
+         r = g.query('CREATE INDEX ON :{label}({field})'.format(label=label,field=field))
+         r.pretty_print()
+
+      print('Full text:')
+      for field in ['keywords','headline','description','articleBody']:
+         print((label,field))
+         r = g.query('CALL db.idx.fulltext.createNodeIndex("{label}","{field}")'.format(label=label,field=field))
+         r.pretty_print()
 
 if __name__ == '__main__':
    main()
