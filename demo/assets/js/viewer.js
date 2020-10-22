@@ -267,7 +267,7 @@ class Viewer {
             this.debug(`Ignoring ${type} ${word.text} , count below ${minimum}`);
             continue;
          }
-         console.log(`${word.text} : ${word.count}`)
+         //console.log(`${word.text} : ${word.count}`)
          let data = this.words[word.text];
          if (data==null) {
             let id = `w${this.word_count}`
