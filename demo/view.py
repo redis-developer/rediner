@@ -231,6 +231,38 @@ def entity_cooccurrences():
 
    return cooccurrences_result(result)
 
+@data.route('/search')
+@gzipped
+def search():
+   dataset = request.args.get('dataset')
+   if dataset is None:
+      dataset = current_app.config['GRAPH'][0]
+   graph = get_graph(dataset)
+   q = request.args.get('q')
+
+   if q is None:
+      return jsonify({'error' : "Missing required 'q' parameter."}),400
+
+   query = """
+CALL db.idx.fulltext.queryNodes('BlogPosting', '{query}') YIELD node
+RETURN node.url,node.headline,node.datePublished,node.description
+""".format(query=cypher_quote(q))
+
+   result = graph.query(query)
+   articles = list(map(lambda item : {'url':item[0],'headline': item[1],'datePublished' : item[2],'description' : item[3]},result.result_set))
+
+   query = """
+CALL db.idx.fulltext.queryNodes('BlogPosting', '{query}') YIELD node
+MATCH (node)-[u:uses]->(e:NamedEntity)
+RETURN e.text,count(node),sum(u.count)
+""".format(query=cypher_quote(q))
+
+   result = graph.query(query)
+   entities = list(map(lambda item : {'text':item[0],'articles':int(item[1]),'count':int(item[2])},result.result_set))
+
+   return jsonify({'articles' : articles, 'entities' : entities})
+
+
 def create_app(host='0.0.0.0',port=6379,graph='test',password=None,app=None,config=None):
    if app is None:
       app = Flask(__name__)
