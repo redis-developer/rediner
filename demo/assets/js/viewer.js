@@ -337,6 +337,8 @@ class Viewer {
          $("#articles .content").empty();
 
          this.initGraph();
+         this.min_keyword = Number.parseInt($("#min-keyword").val());
+         this.min_entity = Number.parseInt($("#min-entity").val());
          this.words = {}
          this.word_count = 0;
 
@@ -344,7 +346,7 @@ class Viewer {
             return;
          }
 
-         this.loadWords(results.entities,'entity',1)
+         this.loadWords(results.entities,'entity',this.min_entity)
 
          setTimeout(() => {
             fetch(`/data/entities/cooccurrences?dataset=${dataset}`).then( (response) => {
