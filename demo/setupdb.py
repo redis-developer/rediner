@@ -12,8 +12,8 @@ def main(call_args=None):
 
    args = argparser.parse_args()
 
-   r = redis.Redis(host=args.host,port=args.port,password=args.password)
    for name in args.graphs:
+      r = redis.Redis(host=args.host,port=args.port,password=args.password)
       g = Graph(name,r)
 
       print('Indexes:')
