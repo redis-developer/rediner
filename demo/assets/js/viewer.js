@@ -61,6 +61,7 @@ class Viewer {
          $("#current").text('');
          $("#articles .term").empty();
          $("#articles .content").empty();
+         $("#results .content").empty();
          this.setEntityMinimum();
       });
 
