@@ -1,0 +1,4 @@
+redis
+redisgraph
+flask
+requests
