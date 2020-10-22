@@ -3,6 +3,7 @@ import argparse
 import functools
 import gzip
 import sys
+import os
 from io import StringIO
 from urllib.parse import unquote, unquote_plus
 import redis
@@ -90,6 +91,49 @@ data = Blueprint('data',__name__,template_folder='templates')
 @gzipped
 def datasets():
    return jsonify(current_app.config['GRAPH'])
+
+@data.route('/distribution')
+@gzipped
+def distribution():
+   dataset = request.args.get('dataset')
+   if dataset is None:
+      dataset = current_app.config['GRAPH'][0]
+   graph = get_graph(dataset)
+   summary = graph.query('MATCH (a)-[u:uses]->(e:NamedEntity) RETURN e.text,count(a),sum(u.count)')
+   distribution = {}
+
+   article_count = 0
+   use_count = 0
+   article_counts = []
+   for item in summary.result_set:
+      rate = round(item[2]/item[1])
+      article_count += item[1]
+      use_count += item[2]
+      if rate in distribution:
+         distribution[rate]['articles'] += item[1]
+         distribution[rate]['count'] += item[2]
+         distribution[rate]['entities'].append(item[0])
+      else:
+         distribution[rate] = {
+            'rate' : rate,
+            'articles' : item[1],
+            'count' : item[2],
+            'entities' : [item[0]]
+         }
+
+   result = []
+   for rate in sorted(distribution.keys()):
+      info = distribution[rate]
+      result.append(info)
+
+   # articles = [distribution[rate]['articles'] for rate in sorted(distribution.keys()) ]
+   # print((article_count,use_count,round(use_count/float(article_count))))
+   # print(articles)
+   # from statistics import stdev, quantiles
+   # print(stdev(articles))
+   # print(quantiles(articles,n=2))
+
+   return jsonify(result)
 
 @data.route('/articles')
 @gzipped
@@ -262,6 +306,8 @@ RETURN e.text,count(node),sum(u.count)
 
    return jsonify({'articles' : articles, 'entities' : entities})
 
+def from_env(name,default_value,dtype=str,action=lambda x : x):
+   return action(dtype(os.environ[name]) if name in os.environ else default_value)
 
 def create_app(host='0.0.0.0',port=6379,graph='test',password=None,app=None,config=None):
    if app is None:
@@ -274,15 +320,23 @@ def create_app(host='0.0.0.0',port=6379,graph='test',password=None,app=None,conf
    if config is not None:
       import os
       app.config.from_pyfile(os.path.abspath(config))
+
    if 'REDIS_HOST' not in app.config:
-      app.config['REDIS_HOST'] = host
+      app.config['REDIS_HOST'] = from_env('REDIS_HOST',host)
    if 'REDIS_PORT' not in app.config:
-      app.config['REDIS_PORT'] = port
+      app.config['REDIS_PORT'] = from_env('REDIS_PORT',port,dtype=int)
    if 'REDIS_PASSWORD' not in app.config:
-      app.config['REDIS_PASSWORD'] = password
+      app.config['REDIS_PASSWORD'] = from_env('REDIS_PASSWORD',password)
    if 'GRAPH' not in app.config:
-      app.config['GRAPH'] = graph
+      app.config['GRAPH'] = from_env('GRAPH',graph,action=lambda x : x.split(',') if type(x)==str else x)
    return app
+
+class Config(object):
+   DEBUG=True
+   REDIS_HOST = from_env('REDIS_HOST','0.0.0.0')
+   REDIS_PORT = from_env('REDIS_PORT',6379,dtype=int)
+   REDIS_PASSWORD = from_env('REDIS_PASSWORD',None)
+   GRAPH = from_env('GRAPH',['test'],action=lambda x : x.split(',') if type(x)==str else x)
 
 def main(call_args=None):
    argparser = argparse.ArgumentParser(description='Web')

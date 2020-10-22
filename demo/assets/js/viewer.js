@@ -61,6 +61,7 @@ class Viewer {
          $("#current").text('');
          $("#articles .term").empty();
          $("#articles .content").empty();
+         this.setEntityMinimum();
       });
 
       $("#search").on('keypress', (e) => {
@@ -80,6 +81,7 @@ class Viewer {
             $("#dataset").append(`<option value='${name}'${selected ? ' selected' : ''}>${name}</option>`);
             selected = false;
          }
+         this.setEntityMinimum();
       }).catch( (error) => {
          console.error('Cannot retrieve dataset list.',error)
       })
@@ -218,6 +220,22 @@ class Viewer {
                "</div>"
 
             )
+         }
+      }).catch( (error) => {
+         console.error(`Cannot retrieve articles for keyword ${keyword}.`,error)
+      })
+   }
+
+   setEntityMinimum() {
+      let dataset = $("#dataset").val();
+      fetch(`/data/distribution?dataset=${dataset}`).then( (response) => {
+         return response.json()
+      }).then( (distribution) => {
+         for (let item of distribution) {
+            if (item.count < 100) {
+               $("#min-entity").val(item.rate);
+               break;
+            }
          }
       }).catch( (error) => {
          console.error(`Cannot retrieve articles for keyword ${keyword}.`,error)
