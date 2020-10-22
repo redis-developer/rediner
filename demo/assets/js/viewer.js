@@ -30,6 +30,8 @@ class Viewer {
       this.articles = document.getElementById("articles");
       this.articlesShown = true;
 
+      this.results = document.getElementById("results");
+
       $("#min-keyword-range").change(() => {
          let value = $("#min-keyword-range").val();
          this.min_keyword = Number.parseInt(value);
@@ -59,6 +61,15 @@ class Viewer {
          $("#current").text('');
          $("#articles .term").empty();
          $("#articles .content").empty();
+      });
+
+      $("#search").on('keypress', (e) => {
+         if (e.which==13) {
+            this.search($("#search").val());
+         }
+      });
+      $("#go-search").click((e) => {
+         this.search($("#search").val());
       });
 
       fetch('/data/datasets').then( (response) => {
@@ -256,7 +267,7 @@ class Viewer {
             this.debug(`Ignoring ${type} ${word.text} , count below ${minimum}`);
             continue;
          }
-         //console.log(`${word.text} : ${word.count}`)
+         console.log(`${word.text} : ${word.count}`)
          let data = this.words[word.text];
          if (data==null) {
             let id = `w${this.word_count}`
@@ -313,6 +324,66 @@ class Viewer {
            nodeOverlap: 65335
         }
       ).run()
+   }
+
+   search(query) {
+      console.log(`search: ${query}`);
+      let dataset = $("#dataset").val();
+      fetch(`/data/search?q=${encodeURIComponent(query)}&dataset=${dataset}`).then( (response) => {
+         return response.json();
+      }).then( (results) => {
+
+         $("#articles .term").empty();
+         $("#articles .content").empty();
+
+         this.initGraph();
+         this.words = {}
+         this.word_count = 0;
+
+         if (results.articles.length==0 && results.entities==0) {
+            return;
+         }
+
+         this.loadWords(results.entities,'entity',1)
+
+         setTimeout(() => {
+            fetch(`/data/entities/cooccurrences?dataset=${dataset}`).then( (response) => {
+               return response.json()
+            }).then( (cooccurrences) => {
+               this.loadCooccurrences(cooccurrences)
+               setTimeout(() => {
+                  this.layout()
+               },1)
+            }).catch( (error) => {
+               console.error('Cannot retrieve cooccurrences.',error)
+            })
+         },1);
+
+         $("#results .content").empty();
+         results.articles.sort((x,y) => {
+            if (y.datePublished==null) {
+               return -1;
+            }
+            if (x.datePublished==null) {
+               return 1;
+            }
+            return y.datePublished.localeCompare(x.datePublished);
+         });
+         for (let article of results.articles) {
+            console.log(article);
+            $("#results .content").append(
+               "<div class='article'>" +
+               `<h4><a href="${htmlescape(article.url)}" target="article">${article.datePublished==null ? '' : article.datePublished.substring(0,article.datePublished.indexOf('T'))+' : '}${htmlescape(article.headline)}</a></h4>` +
+               `<p>${article.description==null ? '' :article.description.substring(0,100) + ' ...'}</p>` +
+               "</div>"
+
+            )
+         }
+
+
+      }).catch( (error) => {
+         console.error(`Cannot search.`,error)
+      })
    }
 }
 let app = new Viewer()

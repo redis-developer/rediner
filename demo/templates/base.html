@@ -27,20 +27,24 @@
       <input id="min-keyword" size="3" value="1">
       <input type="range" id="min-keyword-range" min="0" max="10" value="1">
       <button id = "reload">Load</button>
-      <!--
       <input id="search" size="40">
       <button id="go-search">Search</button>
-   -->
       <h1 id="current"></h1>
    </nav>
 <article class="viewer">
    <div id="graph">
    </div>
 </article>
+<div class="info">
 <div id="articles">
    <h1>Articles</h1>
    <h2 class="term"></h2>
    <div class="content"></div>
+</div>
+<div id="results">
+   <h1>Search Results</h1>
+   <div class="content"></div>
+</div>
 </div>
 </main>
 {% endblock %}
