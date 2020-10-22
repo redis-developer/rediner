@@ -103,6 +103,12 @@ if __name__ == '__main__':
    argparser.add_argument('files',nargs='+',help='A list of text files or directories to process')
    args = argparser.parse_args()
 
+   if args.password is None and 'REDIS_PASSWORD' in os.environ:
+      args.password = os.environ['REDIS_PASSWORD']
+   if args.host is None and 'REDIS_PASSWORD' in os.environ:
+      args.host = os.environ['REDIS_HOST']
+   if args.port is None and 'REDIS_PASSWORD' in os.environ:
+      args.port = int(os.environ['REDIS_PORT'])
 
    if args.action=='ner':
       if args.extension is None:

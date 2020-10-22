@@ -1,4 +1,5 @@
 import argparse
+import os
 import redis
 from redisgraph import Graph
 
@@ -11,6 +12,13 @@ def main(call_args=None):
    argparser.add_argument('graphs',nargs='+',help='Graphs to setup')
 
    args = argparser.parse_args()
+
+   if args.password is None and 'REDIS_PASSWORD' in os.environ:
+      args.password = os.environ['REDIS_PASSWORD']
+   if args.host is None and 'REDIS_PASSWORD' in os.environ:
+      args.host = os.environ['REDIS_HOST']
+   if args.port is None and 'REDIS_PASSWORD' in os.environ:
+      args.port = int(os.environ['REDIS_PORT'])
 
    for name in args.graphs:
       r = redis.Redis(host=args.host,port=args.port,password=args.password)
