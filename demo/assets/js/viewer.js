@@ -18,6 +18,7 @@ class Viewer {
       this.node_scaling = 1;
       this.min_node_size = 20;
       this.show_debug = false;
+      this.cooccurrences_batch_size = 10000;
    }
    init(element) {
 
@@ -155,23 +156,27 @@ class Viewer {
             fetch(`/data/entities?dataset=${dataset}`).then( (response) => {
                return response.json()
             }).then( (entities) => {
-               this.loadWords(entities,'entity',this.min_entity)
+               this.loadWords(entities,'entity',this.min_entity);
+
                setTimeout(() => {
                   fetch(`/data/keywords/cooccurrences?dataset=${dataset}`).then( (response) => {
                      return response.json()
                   }).then( (cooccurrences) => {
-                     this.loadCooccurrences(cooccurrences)
+                     this.loadCooccurrences(cooccurrences);
                      setTimeout(() => {
-                        fetch(`/data/entities/cooccurrences?dataset=${dataset}`).then( (response) => {
-                           return response.json()
-                        }).then( (cooccurrences) => {
-                           this.loadCooccurrences(cooccurrences)
-                           setTimeout(() => {
-                              this.layout()
-                           },1)
-                        }).catch( (error) => {
-                           console.error('Cannot retrieve cooccurrences.',error)
-                        })
+                        let entity_set = entities.reduce(
+                           (a,e) => {
+                              if (e.count>=this.min_entity) {
+                                 a.push(e.text)
+                              }
+                              return a;
+                           },
+                           []
+                        );
+                        this.fetchEntityCooccurrences(entity_set);
+                     },1);
+                     setTimeout(() => {
+                        this.layout();
                      },1);
                   }).catch( (error) => {
                      console.error('Cannot retrieve cooccurrences.',error)
@@ -232,14 +237,27 @@ class Viewer {
       fetch(`/data/distribution?dataset=${dataset}`).then( (response) => {
          return response.json()
       }).then( (distribution) => {
-         for (let item of distribution) {
-            if (item.count < 100) {
-               $("#min-entity").val(item.rate);
+         let total = 0;
+         let counts = Object.keys(distribution);
+         counts.sort((x,y) => parseFloat(x) - parseFloat(y))
+         let last = -1;
+         for (let index=counts.length-1; index>=0; index--) {
+            let value = distribution[counts[index]];
+            if ((total + value) > 100) {
+               $("#min-entity").val((index+2).toString());
                break;
             }
+            total += value;
+            last = index;
          }
+         // for (let item of distribution) {
+         //    if (item.count < 100) {
+         //       $("#min-entity").val(item.rate);
+         //       break;
+         //    }
+         // }
       }).catch( (error) => {
-         console.error(`Cannot retrieve articles for keyword ${keyword}.`,error)
+         console.error(`Cannot retrieve distribution.`,error)
       })
    }
 
@@ -308,6 +326,33 @@ class Viewer {
       }
    }
 
+   loadCooccurrenceMatrix(words,matrix) {
+      for (let row=0; row<matrix.length; row++) {
+         let source = this.words[words[row]];
+         if (source==null) {
+            continue;
+         }
+         for (let col=0; col<matrix.length; col++) {
+            if (row==col) {
+               continue;
+            }
+            if (matrix[row][col]==0) {
+               continue;
+            }
+            let target = this.words[words[col]];
+            if (target==null) {
+               continue;
+            }
+            let edge_id = `e-${source.id}-${target.id}`;
+            let alt_edge_id = `e-${target.id}-${source.id}`;
+            if (this.keywordGraph.$(`#${edge_id}`).length==0 && this.keywordGraph.$(`#${alt_edge_id}`).length==0) {
+               //console.log(`edge from ${source.name}/${source.id} to ${target.name}/${target.id}`);
+               this.keywordGraph.add({ group: 'edges', data: { id: edge_id, source: source.id, target: target.id}})
+            }
+         }
+      }
+   }
+
    loadCooccurrences(words) {
       for (let word of words) {
          let source = this.words[word.name];
@@ -323,6 +368,7 @@ class Viewer {
             let target = this.words[words[index].name];
             if (target!=null) {
                let edge_id = `e-${source.id}-${target.id}`;
+               let alt_edge_id = `e-${source.id}-${target.id}`;
                if (this.keywordGraph.$(`#${edge_id}`).length==0) {
                   //console.log(`edge from ${source.name}/${source.id} to ${target.name}/${target.id}`);
                   this.keywordGraph.add({ group: 'edges', data: { id: edge_id, source: source.id, target: target.id}})
@@ -343,6 +389,61 @@ class Viewer {
            nodeOverlap: 65335
         }
       ).run()
+   }
+
+   fetchEntityCooccurrences(entities) {
+
+      console.log(entities);
+
+      let dataset = $("#dataset").val();
+
+
+      let count = 1;
+      if ($('#same-article').is(":checked")) {
+         count = 0;
+      }
+
+      fetch(`/data/entities/cooccurrences?dataset=${dataset}&count=${count}`,{
+         method: 'POST',
+         headers: { 'Content-Type' : 'application/json'},
+         body: JSON.stringify(entities)
+      }).then( (response) => {
+         return response.json();
+      }).then( (matrix) => {
+         setTimeout(() => {
+            this.loadCooccurrenceMatrix(entities,matrix);
+            this.layout();
+         },1);
+      }).catch( (error) => {
+         console.error(`Cannot retrieve entity cooccurrences`,error)
+      });
+
+      /*
+      let start = 0;
+      let action = (cooccurrences) => {
+         this.loadCooccurrences(cooccurrences);
+      };
+      let next = () => {
+         fetch(`/data/entities/cooccurrences?dataset=${dataset}&start=${start}&limit=${this.cooccurrences_batch_size}`).then( (response) => {
+            return response.json()
+         }).then( (cooccurrences) => {
+            if (cooccurrences.length==0) {
+               setTimeout(() => {
+                  this.layout();
+               },1);
+               return;
+            }
+            action(cooccurrences);
+            start += this.cooccurrences_batch_size;
+            setTimeout(() => {
+               next();
+            },1);
+         }).catch( (error) => {
+            console.error(`Cannot retrieve cooccurrences (${start},${this.cooccurrences_batch_size})`,error)
+         })
+      };
+      next();
+      */
    }
 
    search(query) {
@@ -368,16 +469,22 @@ class Viewer {
          this.loadWords(results.entities,'entity',this.min_entity)
 
          setTimeout(() => {
-            fetch(`/data/entities/cooccurrences?dataset=${dataset}`).then( (response) => {
-               return response.json()
-            }).then( (cooccurrences) => {
-               this.loadCooccurrences(cooccurrences)
-               setTimeout(() => {
-                  this.layout()
-               },1)
-            }).catch( (error) => {
-               console.error('Cannot retrieve cooccurrences.',error)
-            })
+            this.layout();
+         },1);
+
+
+         setTimeout(() => {
+            let entity_set = results.entities.reduce(
+               (a,e) => {
+                  if (e.count>=this.min_entity) {
+                     a.push(e.text)
+                  }
+                  return a;
+               },
+               []
+            );
+
+            this.fetchEntityCooccurrences(entity_set);
          },1);
 
          $("#results .content").empty();
@@ -391,7 +498,7 @@ class Viewer {
             return y.datePublished.localeCompare(x.datePublished);
          });
          for (let article of results.articles) {
-            console.log(article);
+            //console.log(article);
             $("#results .content").append(
                "<div class='article'>" +
                `<h4><a href="${htmlescape(article.url)}" target="article">${article.datePublished==null ? '' : article.datePublished.substring(0,article.datePublished.indexOf('T'))+' : '}${htmlescape(article.headline)}</a></h4>` +

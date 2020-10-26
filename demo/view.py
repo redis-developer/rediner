@@ -8,6 +8,7 @@ from io import StringIO
 from urllib.parse import unquote, unquote_plus
 import redis
 from redisgraph import Graph
+import time
 
 def cypher_quote(value):
    return value.replace('\n',r'\n').replace("'",r"\'")
@@ -99,32 +100,40 @@ def distribution():
    if dataset is None:
       dataset = current_app.config['GRAPH'][0]
    graph = get_graph(dataset)
-   summary = graph.query('MATCH (a)-[u:uses]->(e:NamedEntity) RETURN e.text,count(a),sum(u.count)')
+   summary = graph.query('MATCH (a)-[u:uses]->(e:NamedEntity) RETURN e.text,sum(u.count)')
    distribution = {}
-
-   article_count = 0
-   use_count = 0
-   article_counts = []
    for item in summary.result_set:
-      rate = round(item[2]/item[1])
-      article_count += item[1]
-      use_count += item[2]
-      if rate in distribution:
-         distribution[rate]['articles'] += item[1]
-         distribution[rate]['count'] += item[2]
-         distribution[rate]['entities'].append(item[0])
+      if item[1] in distribution:
+         distribution[item[1]] += 1
       else:
-         distribution[rate] = {
-            'rate' : rate,
-            'articles' : item[1],
-            'count' : item[2],
-            'entities' : [item[0]]
-         }
-
-   result = []
-   for rate in sorted(distribution.keys()):
-      info = distribution[rate]
-      result.append(info)
+         distribution[item[1]] = 1
+   return jsonify(distribution)
+   # summary = graph.query('MATCH (a)-[u:uses]->(e:NamedEntity) RETURN e.text,count(a),sum(u.count)')
+   # distribution = {}
+   #
+   # article_count = 0
+   # use_count = 0
+   # article_counts = []
+   # for item in summary.result_set:
+   #    rate = round(item[2]/item[1])
+   #    article_count += item[1]
+   #    use_count += item[2]
+   #    if rate in distribution:
+   #       distribution[rate]['articles'] += item[1]
+   #       distribution[rate]['count'] += item[2]
+   #       distribution[rate]['entities'].append(item[0])
+   #    else:
+   #       distribution[rate] = {
+   #          'rate' : rate,
+   #          'articles' : item[1],
+   #          'count' : item[2],
+   #          'entities' : [item[0]]
+   #       }
+   #
+   # result = []
+   # for rate in sorted(distribution.keys()):
+   #    info = distribution[rate]
+   #    result.append(info)
 
    # articles = [distribution[rate]['articles'] for rate in sorted(distribution.keys()) ]
    # print((article_count,use_count,round(use_count/float(article_count))))
@@ -133,7 +142,7 @@ def distribution():
    # print(stdev(articles))
    # print(quantiles(articles,n=2))
 
-   return jsonify(result)
+   #return jsonify(result)
 
 @data.route('/articles')
 @gzipped
@@ -221,14 +230,12 @@ def entities():
    if in_year is not None:
       query.write("{clause} a.datePublished starts with '{in_year}'\n".format(clause=clause,in_year=in_year))
       clause = 'and'
-   query.write('return e.text,count(a),sum(u.count)')
+   query.write('return id(e),e.text,count(a),sum(u.count)')
    result = graph.query(query.getvalue())
-   keywords = list(map(lambda item : {'text':item[0],'articles':int(item[1]),'count':int(item[2])},result.result_set))
+   keywords = list(map(lambda item : {'id':item[0],'text':item[1],'articles':int(item[2]),'count':int(item[3])},result.result_set))
    return jsonify(keywords)
 
-def cooccurrences_result(result):
-   positions = {}
-   keywords = []
+def cooccurrences_result(result,positions={},keywords=[]):
    for item in result.result_set:
       first_pos = positions.get(item[0],-1)
       if first_pos<0:
@@ -248,7 +255,7 @@ def cooccurrences_result(result):
          keywords[second_pos]['occurs_with'].index(first_pos)
       except ValueError:
          keywords[second_pos]['occurs_with'].append(first_pos)
-   return jsonify(keywords)
+   return positions, keywords
 
 
 @data.route('/keywords/cooccurrences')
@@ -261,9 +268,10 @@ def keyword_cooccurrences():
    graph = get_graph(dataset)
    result = graph.query('match (k1:Keyword)<-[:keyword]-(a)-[:keyword]->(k2:Keyword) where k1 <> k2 return k1.text, k2.text')
 
-   return cooccurrences_result(result)
+   _, keywords = cooccurrences_result(result)
+   return jsonify(keywords)
 
-@data.route('/entities/cooccurrences')
+@data.route('/entities/cooccurrences',methods=['GET','POST'])
 @gzipped
 def entity_cooccurrences():
 
@@ -271,9 +279,82 @@ def entity_cooccurrences():
    if dataset is None:
       dataset = current_app.config['GRAPH'][0]
    graph = get_graph(dataset)
-   result = graph.query('match (e1:NamedEntity)<-[:uses]-(a)-[:uses]->(e2:NamedEntity) where e1 <> e2 return e1.text, e2.text')
 
-   return cooccurrences_result(result)
+
+   if request.method=='POST':
+      if not request.is_json:
+         return jsonify({'error' : "The data is not JSON: "+request.content_type}),400
+      if type(request.json)!=list:
+         return jsonify({'error' : "The data must be an array of entities."}),400
+      article_count = request.args.get('count')
+      positions = {}
+      # entities = []
+      matrix = []
+      words = request.json
+      for index,text in enumerate(words):
+         positions[text] = index
+         matrix.append([0] * len(request.json))
+
+      batch_size = 250
+      for block in [words[i:i + batch_size] for i in range(0, len(words), batch_size)]:
+         query = StringIO()
+         query.write('MATCH (e1:NamedEntity)<-[:uses]-(a)-[:uses]->(e2:NamedEntity) WITH e1, e2, count(a) as a_count WHERE e1 <> e2 ')
+         if article_count is not None:
+            article_count = int(article_count)
+            if article_count > 0:
+               query.write(' AND a_count>{} '.format(article_count))
+         query.write(' AND (')
+         for index, text in enumerate(block):
+            if index > 0:
+               query.write(' OR ')
+            query.write("e1.text='{}'".format(cypher_quote(text)))
+         query.write(') RETURN e1.text,e2.text')
+         q = query.getvalue()
+         start = time.time()
+         result = graph.query(q)
+         elapsed = time.time() - start
+         print(elapsed)
+
+         # TODO: do we include other words that are in the list?
+         for item in result.result_set:
+            row, col = positions[item[0]], positions.get(item[1],-1)
+            if col<0:
+               continue
+               # col = len(matrix[0])
+               # for r in matrix:
+               #    r.append(0)
+               # matrix.append([0]*(col+1))
+               # words.append(word)
+            matrix[row][col] = 1
+            matrix[col][row] = 1
+
+         # cooccurrences_result(result,positions=positions,keywords=entities)
+
+      return jsonify(matrix)
+
+   else:
+      minimum = request.args.get('minimum')
+      if minimum is not None:
+         minimum = int(minimum)
+         query = """
+MATCH (a)-[u:uses]->(e) WITH e, sum(u.count) AS use_count WHERE use_count >= {minimum}
+MATCH (e:NamedEntity)<-[:uses]-()-[:uses]->(e2:NamedEntity) WHERE e <> e2
+RETURN e.text, e2.text""".format(minimum=minimum)
+      else:
+         start = request.args.get('start')
+         limit = request.args.get('limit')
+         query = 'MATCH (e1:NamedEntity)<-[:uses]-(a)-[:uses]->(e2:NamedEntity) WHERE e1 <> e2 return e1.text, e2.text'
+         if limit is not None:
+            if start is None:
+               start = 0
+            start = int(start)
+            limit = int(limit)
+            query += ' ORDER BY e1.text SKIP {start} LIMIT {limit}'.format(start=start,limit=limit)
+
+      result = graph.query(query)
+
+      _, entities = cooccurrences_result(result)
+      return jsonify(entities)
 
 @data.route('/search')
 @gzipped

@@ -21,10 +21,12 @@
    <nav>
       <select id = "dataset"></select>
       <label for="min-entity">Entity</label>
-      <input id="min-entity" size="3" value="2">
+      <input id="min-entity" size="3" value="2" title="Minimum entity count">
       <input type="range" id="min-entity-range" min="0" max="50" value="2">
+      <input type="checkbox" id="same-article">
+      <label for="same-article" title="Within same article?">same?</label>
       <label for="min-keyword">Keyword</label>
-      <input id="min-keyword" size="3" value="1">
+      <input id="min-keyword" size="3" value="1" title="Minimum keyword count">
       <input type="range" id="min-keyword-range" min="0" max="10" value="1">
       <button id = "reload">Load</button>
       <input id="search" size="40">
