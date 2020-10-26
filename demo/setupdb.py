@@ -30,6 +30,11 @@ def main(call_args=None):
          print((label,field))
          r = g.query('CREATE INDEX ON :{label}({field})'.format(label=label,field=field))
          r.pretty_print()
+      label = 'NamedEntity'
+      for field in ['text']:
+         print((label,field))
+         r = g.query('CREATE INDEX ON :{label}({field})'.format(label=label,field=field))
+         r.pretty_print()
 
       print('Full text:')
       for field in ['keywords','headline','description','articleBody']:
