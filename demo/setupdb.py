@@ -37,6 +37,7 @@ def main(call_args=None):
          r.pretty_print()
 
       print('Full text:')
+      label = 'BlogPosting'
       for field in ['keywords','headline','description','articleBody']:
          print((label,field))
          r = g.query('CALL db.idx.fulltext.createNodeIndex("{label}","{field}")'.format(label=label,field=field))
