@@ -55,11 +55,13 @@
 <h1 class="title">Rediner - Named Entity Analysis in RedisGraph</h1>
 </header>
 <p>This project provides a demonstration of the use of the <a href="https://oss.redislabs.com/redisgraph/">RedidGraph</a> to store and analyze named entities (people, places, objects, etc.). The data collection involves a <a href="https://en.wikipedia.org/wiki/Named-entity_recognition">Named Entity Recognition</a> (NER) model from <a href="https://spacy.io">SpaCy</a>.</p>
-<p>The example application allows you to analyze blog posts and navigate the articles via the cooccurences of name entities. The client apply is a simple flask application that uses Cypher to query RedisGraph. The graph is constructed from the harvesting and analysis of the blog post articles.</p>
+<p>The example application uses Flask and allows you to analyze blog posts and navigate the articles via the cooccurences of name entities. The architecture is a simple two-tier application where the web application uses Cypher to directly query RedisGraph.</p>
+<p>The graph in the database is constructed from the harvesting and analysis of the blog post articles throw a separate process. The metadata about the articles and the article contents are stored in RedisGraph. A NER model is applied to the content of the articles and those named entities extracted are stored in the graph in relation to the articles.</p>
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <p>All the implementation is written in Python 3. To run the code, all you will need to do is create a python environment and install the required packages:</p>
 <pre><code>pip install -r requirements.txt</code></pre>
+<p>For a quick start, see the <a href="https://github.com/redis-developer/rediner">project documentation</a> and for more detailed information, see below.</p>
 <section id="what-you-can-do-next" class="level2 tiles">
 <h2 class="tiles">What you can do next</h2>
 <section id="collecting-data" class="level3 tile">
