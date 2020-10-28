@@ -4,7 +4,8 @@ Named Entity Recognition (NER) analysis in RedisGraph.
 
 # Overview
 
-This project contains an example of using the SpaCy NER model to harvest
+This project contains an example of using the [SpaCy](https://spacy.io)
+NER model to harvest
 named entities from blog posts or other web pages. The crawler program
 produces graph structures that can be loaded into RedisGraph for analysis
 via Cypher Queries.
