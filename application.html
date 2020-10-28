@@ -57,7 +57,8 @@
 <p>The demo application is a flask-based application that you can run directly. All it needs is the connection parameters for the Redis database.</p>
 <ol type="1">
 <li><p>Start the web application:</p>
-<pre><code>python app.py</code></pre>
+<pre><code>cd demo
+python view.py key ...</code></pre>
 <p>You can connect to a Redis database with the following parameters:</p>
 <ul>
 <li><p>–host ip</p>
@@ -67,20 +68,14 @@
 <li><p>–password password</p>
 <p>The Redis password</p></li>
 </ul>
-<p>The data is stored in Redis by ISO 8601 dateTime labeled partitions. You can provide alternate key prefix and partition period information by:</p>
-<ul>
-<li>–key-prefix prefix</li>
-<li>–partition nnn</li>
-</ul>
-<p>Note: The partition time is in minutes.</p>
+<p>The remaining arguments are the graph keys to use.</p>
 <p>Alternatively, all of the above settings can be set via environment variables or in the Flask configuration file (via the –config option).</p>
 <p>The keys are:</p>
 <ul>
 <li>REDIS_HOST</li>
 <li>REDIS_PORT</li>
 <li>REDIS_PASSWORD</li>
-<li>KEY_PREFIX</li>
-<li>PARTITION</li>
+<li>GRAPH</li>
 </ul></li>
 <li><p>Visit http://localhost:5000/</p></li>
 </ol>

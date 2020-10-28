@@ -54,15 +54,38 @@
 <header id="title-block-header">
 <h1 class="title">Querying Data</h1>
 </header>
-<p>The named entities that occur on more than one article:</p>
+<section id="cooccurrences-of-named-entities" class="level2">
+<h2>Cooccurrences of Named Entities</h2>
+<p>The main analysis demonstrated in the demo application is the cooccurrences of named entities:</p>
+<ul>
+<li><p>The named entities that cooccur on in an article:</p>
+<pre><code>MATCH (e1:NamedEntity)&lt;-[:uses]-(a)-[:uses]-&gt;(e2:NamedEntity)
+WHERE e1 &lt;&gt; e2 AND e1.text &lt; e1.text
+RETURN e1.text, e2.text</code></pre></li>
+<li><p>The named entities that cooccur on two different articles:</p>
+<pre><code>MATCH (a1)-[:uses]-&gt;(e1:NamedEntity)&lt;-[:uses]-(a2)-[:uses]-&gt;(e2:NamedEntity)&lt;-[:uses]-(a1)
+WHERE a1 &lt;&gt; a2 and e1 &lt;&gt; e2 AND e1.text &lt; e2.text
+RETURN e1.text, e1.text</code></pre></li>
+<li><p>The named entities that occur on more than one article:</p>
 <pre><code>MATCH (a)-[u:uses]-&gt;(e:NamedEntity)
 WITH e, count(a) AS refs, sum(u.count) AS total
-WHERE refs&gt;1 RETURN e.text, refs, total</code></pre>
-<p>The named entities that occur together on in an article:</p>
-<pre><code>MATCH (e1:NamedEntity)&lt;-[:uses]-(a)-[:uses]-&gt;(e2:NamedEntity)
-WHERE e1 &lt;&gt; e2 RETURN e1.text,e2.text,count(a)</code></pre>
-<p>The name entities that occur on at least two different articles:</p>
+WHERE refs&gt;1
+RETURN e.text, refs, total</code></pre></li>
+<li><p>The name entities that occur on at least two different articles:</p>
 <pre><code>MATCH (a1)-[:uses]-&gt;(e:NamedEntity)&lt;-[:uses]-(a2)
-WHERE a1 &lt;&gt; a2 RETURN e.text, count(a1)</code></pre>
+WHERE a1 &lt;&gt; a2 AND a1.headline &lt; a2.headline
+RETURN e.text, count(a1)</code></pre></li>
+</ul>
+</section>
+<section id="search" class="level2">
+<h2>Search</h2>
+<p>We can also search articles:</p>
+<pre><code>CALL db.idx.fulltext.queryNodes(&#39;BlogPosting&#39;, &#39;{query}&#39;) YIELD node
+RETURN node.url, node.headline, node.datePublished, node.description</code></pre>
+<p>and find their related named entities:</p>
+<pre><code>CALL db.idx.fulltext.queryNodes(&#39;BlogPosting&#39;, &#39;{query}&#39;) YIELD node
+MATCH (node)-[u:uses]-&gt;(e:NamedEntity)
+RETURN e.text, count(node), sum(u.count)</code></pre>
+</section>
 </body>
 </html>

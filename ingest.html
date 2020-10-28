@@ -54,6 +54,18 @@
 <header id="title-block-header">
 <h1 class="title">Ingesting Data</h1>
 </header>
-
+<p>Ingesting data is a simple process that invokes the <a href="https://github.com/alexmilowski/pypropgraph">pypropgraph</a> library to read the graph serializations and creates Cypher merge statements.</p>
+<p>Assuming the blog posts are in a directory called <code>out</code>, we can ingest the articles:</p>
+<pre><code>python -m rediner load -r --graph milowski.com out</code></pre>
+<p>And the named entities can also be loaded with the same command:</p>
+<pre><code>python -m rediner load -r --graph milowski.com milowski-com-terms.yaml</code></pre>
+<p>The <code>--graph</code> parameter specifies the RedisGraph key to be used.</p>
+<p>The connection parameters to the database can be specified via parameters:</p>
+<ul>
+<li><code>--host host</code> - specifies the Redis host</li>
+<li><code>--port nnn</code> - specifies the Redis port</li>
+<li><code>--password auth</code> - specifies the Redis password</li>
+</ul>
+<p>Or you can specify these with the environment variables <code>REDIS_HOST</code>, <code>REDIS_PORT</code>, and <code>REDIS_PASSWORD</code>, respectively.</p>
 </body>
 </html>

@@ -54,6 +54,50 @@
 <header id="title-block-header">
 <h1 class="title">Collecting Data</h1>
 </header>
-
+<p>Blogs are articles that are typically published with a certain minimum amount of metadata like the date published, title, author, keywords, etc. Modern blog posts are often encoded with schema.org annotations (see <a href="https://schema.org/BlogPosting">BlogPosting</a>) as well as other metadata facets encoded in various ways. As such, in the raw HTML for the blog article web page there is both metadata and the article body that can be extracted with a modicum of effort.</p>
+<section id="crawling-blog-articles" class="level2">
+<h2>Crawling Blog Articles</h2>
+<p>A simple crawler can be invoked to visit each blog article web page. The crawler assumes the blog is structure in one of two ways:</p>
+<ol type="1">
+<li><p>An index page has a collection of links to each blog page. These index pages can be paginated with next/previous links.</p></li>
+<li><p>A starting blog page links to the “previous” entry in the blog.</p></li>
+</ol>
+<p>The crawler can be invoked by:</p>
+<pre><code>python -m rediner.blog url ...</code></pre>
+<p>From the starting URLs the crawler will inspect the page for articles. If the <code>--same</code> option is specified, it will assume the blog is structured via method (2) above. Otherwise, the blog is assumed to be structured with index pages and separate blog article pages.</p>
+<p>The defaults are will structured to rebuild the datasets for the blogs shown in the demo (i.e., http://www.milowski.com/, ‘https://redislabs.com/company-blog/’,‘https://redislabs.com/tech-blog/’).</p>
+<p>For running on other blogs or adjust how the output is handled, the following options may be useful:</p>
+<ul>
+<li><code>--verbose</code> - Indicates that the process should be verbose and output status and debugging information.</li>
+<li><code>--entry</code> - a CSS selector to use to find an entry link (multiple allowed)</li>
+<li><code>--next</code> - a CSS selector to use to find the next page (i.e., either the next index page or next blog post) (multiple allowed)</li>
+<li><code>--url-only</code> - Output only the URLs of the blog article pages</li>
+<li><code>--same</code> - Indicates that the index and blog article are on the same page (i.e., method 2 above)</li>
+<li><code>--entry-container</code> - a CSS selector to find the article body on the page (multiple allowed)</li>
+<li><code>--remove</code> - a CSS selector of content to ignore for text extraction (multiple allowed)</li>
+<li><code>--full-types</code> - use fully qualified type labels in the output</li>
+<li><code>--store</code> - store the output in separate files</li>
+<li><code>--extension</code> - the output file extension to use.</li>
+<li><code>--stub</code> - the stub for the generated filename.</li>
+<li><code>--dir</code> - the directory in which to store the output files</li>
+</ul>
+<p>For example, while the defaults will collect data from http://www.milowski.com/ without extra parameters, the command with all the selectors specified is:</p>
+<pre><code>python -m rediner.blog --store --dir out \
+--entry &quot;article[typeof]&quot; \
+--next &quot;header .article-navigation a[title=&#39;preceding entry&#39;]&quot; \
+--remove pre --remove code \
+--entry-container &quot;article[resource]&quot; \
+http://www.milowski.com/</code></pre>
+</section>
+<section id="extracting-named-entities" class="level2">
+<h2>Extracting Named Entities</h2>
+<p>The SpaCy NER model can be applied to the harvested data to produce a serialization of the entities to be added to the graph:</p>
+<pre><code>python -m rediner --yaml -r ner out &gt; milowski-com-terms.yaml</code></pre>
+<p>This file will contain the name entity nodes and the edges from the article node to the named entity (the <code>uses</code> relation).</p>
+</section>
+<section id="other-web-pages" class="level2">
+<h2>Other Web Pages</h2>
+<p>The same technique can be use on other web pages with too much effort. The <code>harvest_entry</code> function in <code>rediner.blog</code> can be applied to any page to generate an entry. Since random web pages are less regular in how the link to each other, a crawler will have to determine the set of URLs for any website that will be crawled.</p>
+</section>
 </body>
 </html>
