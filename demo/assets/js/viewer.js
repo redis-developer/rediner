@@ -398,12 +398,16 @@ class Viewer {
       let dataset = $("#dataset").val();
 
 
-      let count = 1;
+      let count = 0;
+      let same = false;
+      if ($('#multiple-cooccurences').is(":checked")) {
+         count = 2;
+      }
       if ($('#same-article').is(":checked")) {
-         count = 0;
+         same = true;
       }
 
-      fetch(`/data/entities/cooccurrences?dataset=${dataset}&count=${count}`,{
+      fetch(`/data/entities/cooccurrences?dataset=${dataset}&count=${count}&same=${same}`,{
          method: 'POST',
          headers: { 'Content-Type' : 'application/json'},
          body: JSON.stringify(entities)

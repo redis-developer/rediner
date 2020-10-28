@@ -287,6 +287,7 @@ def entity_cooccurrences():
       if type(request.json)!=list:
          return jsonify({'error' : "The data must be an array of entities."}),400
       article_count = request.args.get('count')
+      same_article = request.args.get('same','false')=='true'
       positions = {}
       # entities = []
       matrix = []
@@ -298,17 +299,23 @@ def entity_cooccurrences():
       batch_size = 250
       for block in [words[i:i + batch_size] for i in range(0, len(words), batch_size)]:
          query = StringIO()
-         query.write('MATCH (e1:NamedEntity)<-[:uses]-(a)-[:uses]->(e2:NamedEntity) WITH e1, e2, count(a) as a_count WHERE e1 <> e2 ')
-         if article_count is not None:
-            article_count = int(article_count)
-            if article_count > 0:
-               query.write(' AND a_count>{} '.format(article_count))
+         if same_article:
+            query.write('MATCH (e1:NamedEntity)<-[:uses]-(a)-[:uses]->(e2:NamedEntity) WITH e1, e2, count(a) as a_count WHERE e1 <> e2 ')
+            if article_count is not None:
+               article_count = int(article_count)
+               if article_count > 1:
+                  query.write(' AND a_count>={} '.format(article_count))
+         else:
+            query.write('MATCH (a1)-[:uses]->(e1:NamedEntity)<-[:uses]-(a2)-[:uses]->(e2:NamedEntity)<-[:uses]-(a1) WHERE a1 <> a2 and e1 <> e2 ')
          query.write(' AND (')
          for index, text in enumerate(block):
             if index > 0:
                query.write(' OR ')
             query.write("e1.text='{}'".format(cypher_quote(text)))
          query.write(') RETURN e1.text,e2.text')
+
+         if not same_article:
+            query.write(',count(a1)')
          q = query.getvalue()
          start = time.time()
          result = graph.query(q)
