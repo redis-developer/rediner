@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Geospatial Air Quality Sensor Data in Redis</title>
+  <title>Rediner - Named Entity Analysis in RedisGraph</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -52,20 +52,10 @@
 <span class="item"><a href="serverless.html">Serverless</a></span>
 </nav>
 <header id="title-block-header">
-<h1 class="title">Geospatial Air Quality Sensor Data in Redis</h1>
+<h1 class="title">Rediner - Named Entity Analysis in RedisGraph</h1>
 </header>
-<p>This project provides a demonstration of the use of the geospatial features of Redis to store and query air quality sensor readings. It provides a complete process of collecting, ingesting, querying, and rendering the raw sensor data to provide AQI (Air Quality Index) measurements in a map-based web application.</p>
-<p>The raw data is collected from air quality sensors (see <a href="#data-sources">Data sources</a>) and is transformed into <a href="https://www.airnow.gov/aqi/aqi-basics/">AQI (Air Quality Index)</a> measurements and stored as in geospatial partitions.</p>
-<p>The demonstration application is a simple Flask-based application that creates a map-based interactive experience with the date/time and geospatial partitions of the data which displays an interpolated (estimated) surface of AQI measurements.</p>
-<figure>
-<img src="example-interpolation.png" alt="An example interpoliation" /><figcaption aria-hidden="true">An example interpoliation</figcaption>
-</figure>
-<section id="data-sources" class="level2">
-<h2>Data Sources</h2>
-<p><a href="https://www.purpleair.com">PurpleAir sells</a> air quality sensors that measure particulate matter in the air and upload that data to a data repository. They provide access to this <a href="https://docs.google.com/document/d/15ijz94dXJ-YAZLi9iZ_RaBwrZ4KtYeCy08goGBwnbCU/edit#heading=h.2tzq9j55gsj6">aggregated data via an API</a>.</p>
-<p>At its simplest, the API returns a list of sensor readings for a given bounding box defined by a pair of coordinate parameters defining the north west and south east corners of the bounds. The resulting data contains the current sensor data with rolling averages for the particulate matter readings.</p>
-<p>PurpleAir provides documentation for how to turn the PM readings into an <a href="https://www.airnow.gov/aqi/aqi-basics/">AQI (Air Quality Index)</a> measure.</p>
-</section>
+<p>This project provides a demonstration of the use of the <a href="https://oss.redislabs.com/redisgraph/">RedidGraph</a> to store and analyze named entities (people, places, objects, etc.). The data collection involves a <a href="https://en.wikipedia.org/wiki/Named-entity_recognition">Named Entity Recognition</a> (NER) model from <a href="https://spacy.io">SpaCy</a>.</p>
+<p>The example application allows you to analyze blog posts and navigate the articles via the cooccurences of name entities. The client apply is a simple flask application that uses Cypher to query RedisGraph. The graph is constructed from the harvesting and analysis of the blog post articles.</p>
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <p>All the implementation is written in Python 3. To run the code, all you will need to do is create a python environment and install the required packages:</p>
@@ -74,19 +64,19 @@
 <h2 class="tiles">What you can do next</h2>
 <section id="collecting-data" class="level3 tile">
 <h3 class="tile">Collecting Data</h3>
-<p>Understand how data is collected from the air quality sensors and stored for reuse. <a href="collect.html">More</a></p>
+<p>See how articles are harvest and the NER model is applied. <a href="collect.html">More</a></p>
 </section>
 <section id="data-architecture" class="level3 tile">
 <h3 class="tile">Data Architecture</h3>
-<p>See how data is stored in Redis and understand how to setup Redis / Redis Enterprise databases. <a href="data.html">More</a></p>
+<p>See how the graph is constructed. <a href="data.html">More</a></p>
 </section>
 <section id="ingesting-data" class="level3 tile">
 <h3 class="tile">Ingesting Data</h3>
-<p>All about how to ingest raw sensor data into Redis. <a href="ingest.html">More</a></p>
+<p>All about how to ingest articles and named entities into RedisGraph. <a href="ingest.html">More</a></p>
 </section>
 <section id="querying-data" class="level3 tile">
 <h3 class="tile">Querying Data</h3>
-<p>Understand how geospatial data is queried from the various data partitions. <a href="query.html">More</a></p>
+<p>Understand how to use Cypher to query the named entities and articles. <a href="query.html">More</a></p>
 </section>
 <section id="demo-application" class="level3 tile">
 <h3 class="tile">Demo Application</h3>
@@ -94,7 +84,7 @@
 </section>
 <section id="serverless" class="level3 tile">
 <h3 class="tile">Serverless</h3>
-<p>You can deploy the client application via serverless <a href="serverless.html">More</a></p>
+<p>You can deploy the client application via serverless (e.g. AWS Lambda) <a href="serverless.html">More</a></p>
 </section>
 </section>
 </section>
