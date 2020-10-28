@@ -1,6 +1,6 @@
 # rediner
 
-Named Entity Recognition (NER) analysis in RedisGraph.
+[Named Entity Recognition](https://en.wikipedia.org/wiki/Named-entity_recognition) (NER) analysis in RedisGraph.
 
 # Overview
 
