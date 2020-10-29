@@ -21,6 +21,8 @@ stored in the same key or separate keys based on preference.
 
 ## Graph Structure
 
+![NER Graph](ner-graph.png)
+
 1. Each article is a separate node with properties and label `BlogPosting`
 1. Each named entity has a label `NamedEntity` with a `text` property.
 1. There is a single relation named `uses` between an article and a named entity

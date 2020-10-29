@@ -22,7 +22,7 @@ $(TARGETDIR)/%.html: %.md header.html site.html
 
 CSS=\
 $(TARGETDIR)/base.css \
-$(TARGETDIR)/site.css 
+$(TARGETDIR)/site.css
 
 DOCS=\
 $(TARGETDIR)/index.html \
@@ -34,7 +34,8 @@ $(TARGETDIR)/application.html \
 $(TARGETDIR)/serverless.html
 
 RESOURCES=\
-$(TARGETDIR)/site.js
+$(TARGETDIR)/site.js \
+$(TARGETDIR)/ner-graph.png
 
 
 all: $(CSS) $(DOCS) $(RESOURCES)
