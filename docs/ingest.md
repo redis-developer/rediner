@@ -8,8 +8,8 @@ Ingesting data is a simple process that invokes the
 [pypropgraph](https://github.com/alexmilowski/pypropgraph) library
 to read the graph serializations and creates Cypher merge statements.
 
-Assuming the blog posts are in a directory called `out`, we can ingest
-the articles:
+Assuming the blog posts are in a directory called "`out`", the articles
+can be loaded into a local database via:
 
 ```
 python -m rediner load -r --graph milowski.com out
