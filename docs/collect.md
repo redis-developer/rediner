@@ -6,8 +6,8 @@ toc: false
 
 Blogs are articles that are typically published with a certain minimum amount
 of metadata like the date published, title, author, keywords, etc. Modern
-blog posts are often encoded with schema.org annotations (see [BlogPosting](https://schema.org/BlogPosting))
-as well as other metadata facets encoded in various ways. As such, in the
+blog posts are often encoded with [schema.org](https://schema.org/) annotations (see [BlogPosting](https://schema.org/BlogPosting))
+as well as other metadata facets encoded in various ways. As such, within the
 raw HTML for the blog article web page there is both metadata and the
 article body that can be extracted with a modicum of effort.
 
@@ -32,9 +32,13 @@ From the starting URLs the crawler will inspect the page for articles. If the
 (2) above. Otherwise, the blog is assumed to be structured with index pages and
 separate blog article pages.
 
-The defaults are will structured to rebuild the datasets for the blogs shown
+The defaults are structured to rebuild the datasets for the blogs shown
 in the demo. That is, the crawler knows how to traverse and extract the
-articles from: `http://www.milowski.com/`, `https://redislabs.com/company-blog/`, and `https://redislabs.com/tech-blog/`.
+articles from:
+
+ * [`https://www.milowski.com/`](https://www.milowski.com/)
+ * [`https://redislabs.com/company-blog/`](https://redislabs.com/company-blog/)
+ * [`https://redislabs.com/tech-blog/`](https://redislabs.com/tech-blog/)
 
 To run the crawler on other blogs or adjust how the output is handled, the following
 options may be useful:
@@ -53,7 +57,7 @@ options may be useful:
  * `--stub` - the stub for the generated filename.
  * `--dir` - the directory in which to store the output files
 
-For example, the explicit parameters for `http://www.milowski.com/`
+For example, the explicit parameters for `https://www.milowski.com/`
 are:
 
 ```
@@ -62,7 +66,7 @@ python -m rediner.blog --store --dir out \
 --next "header .article-navigation a[title='preceding entry']" \
 --remove pre --remove code \
 --entry-container "article[resource]" \
-http://www.milowski.com/
+https://www.milowski.com/
 ```
 
 ## Extracting Named Entities
