@@ -40,13 +40,15 @@ ingest more than once should result in the same graph.
 The main challenge of scalability is the number of named entities. While the
 SpaCy NER model provides a robust detection of named entities, it does have
 issues with entity word boundaries. As such, sometimes the same named
-entity is prefix or suffixed with extra words like stop words or other
+entity is prefixed or suffixed with extra words like stop words or other
 qualifiers. Pruning the named entities via additional algorithms should
-provide better scalability for processing a large corpus.
+provide better scalability when processing a large corpus.
 
 ## Database
 
-This project relies on RedisGraph and the demo relies on various indexes.
+This project relies on RedisGraph and the demo relies on various indexes. These
+indexes are created by a separate program called [`setupdb.py`](https://github.com/redis-developer/rediner/blob/main/demo/setupdb.py)
+and can be run on any graph key.
 
 You can run a local RedisGraph instance by:
 
@@ -60,7 +62,7 @@ And setup the index per key:
 python demo/setupdb.py milowski.com
 ```
 
-The above program accepts multiple graph keys:
+The setup program also accepts multiple graph keys:
 
 ```
 python demo/setupdb.py milowski.com redislabs-blog
