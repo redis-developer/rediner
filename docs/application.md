@@ -4,8 +4,8 @@ css: site.css
 toc: false
 ---
 
-The demo application is a flask-based application that you can run directly.
-All it needs is the connection parameters for the Redis database.
+The demo application is build with [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+and you run it directly. All it needs is the connection parameters for the Redis database.
 
 1. Start the web application:
 
@@ -14,7 +14,8 @@ All it needs is the connection parameters for the Redis database.
    python view.py key ...
    ```
 
-   You can connect to a Redis database with the following parameters:
+   The application defaults to a local database. You can connect to a
+   Redis database with the following parameters:
 
     * --host ip
 
@@ -32,7 +33,7 @@ All it needs is the connection parameters for the Redis database.
    Alternatively, all of the above settings can be set via environment variables
    or in the Flask configuration file (via the --config option).
 
-   The keys are:
+   The environment variables are:
 
     * REDIS_HOST
     * REDIS_PORT
