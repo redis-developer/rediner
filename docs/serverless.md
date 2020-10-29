@@ -42,7 +42,8 @@ You can package the application by:
 
    You should now have the `rediner` and `flask-serverless` as sibling directories.
 
-1. Building the build script as a docker container:
+1. The build script container image guarantees the deployment architecture matches for the
+   packaged python packages. Build this image by:
 
    ```
    cd rediner/serverless
