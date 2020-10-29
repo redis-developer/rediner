@@ -4,26 +4,29 @@ css: site.css
 toc: false
 ---
 
-This project provides a demonstration of the use of the [RedidGraph](https://oss.redislabs.com/redisgraph/) to
+This demonstrates of the use of the [RedisGraph](https://oss.redislabs.com/redisgraph/) to
 store and analyze named entities (people, places, objects, etc.). The
-data collection involves a
+data collection involves applying a
 [Named Entity Recognition](https://en.wikipedia.org/wiki/Named-entity_recognition) (NER)
-model from [SpaCy](https://spacy.io).
+model from [SpaCy](https://spacy.io) to a set of blog posts.
 
-The example application uses Flask and allows you to analyze blog posts and navigate the
-articles via the cooccurences of name entities. The architecture is a simple
-two-tier application where the web application uses Cypher to directly query
-RedisGraph.
+An example application uses [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+and provides you to the ability to navigate
+the blog posts via the cooccurrences of the named entityies. It also
+provides full text search on the graph and displays the collect of named
+entities from the search results. The application has a simple two-tier
+architecture where the Flask-based web application uses
+[Cypher](https://www.opencypher.org) to directly query RedisGraph.
 
-The graph in the database is constructed from the harvesting and analysis of
-the blog post articles throw a separate process. The metadata about the articles
-and the article contents are stored in RedisGraph. A NER model is applied
-to the content of the articles and those named entities extracted are stored
+The graph is constructed from harvesting and analyzing
+blog post articles through a process separate from RedisGraph. The metadata
+about the articles and the article text are stored in RedisGraph. Separately, an NER model is applied
+to the content of the articles and the named entities extracted are also stored
 in the graph in relation to the articles.
 
 # Setup
 
-All the implementation is written in Python 3. To run the code, all you
+The implementation is written in Python 3. To run the code, all you
 will need to do is create a python environment and install the
 required packages:
 
@@ -58,4 +61,4 @@ Understand how to run the demo web application. [More](application.html)
 
 ### Serverless {.tile}
 
-You can deploy the client application via serverless (e.g. AWS Lambda) [More](serverless.html)
+You can deploy the client application via serverless [More](serverless.html)
