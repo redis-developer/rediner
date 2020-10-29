@@ -54,12 +54,12 @@
 <header id="title-block-header">
 <h1 class="title">Demo Application</h1>
 </header>
-<p>The demo application is a flask-based application that you can run directly. All it needs is the connection parameters for the Redis database.</p>
+<p>The demo application is build with <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> and you run it directly. All it needs is the connection parameters for the Redis database.</p>
 <ol type="1">
 <li><p>Start the web application:</p>
 <pre><code>cd demo
 python view.py key ...</code></pre>
-<p>You can connect to a Redis database with the following parameters:</p>
+<p>The application defaults to a local database. You can connect to a Redis database with the following parameters:</p>
 <ul>
 <li><p>–host ip</p>
 <p>The Redis host address</p></li>
@@ -70,7 +70,7 @@ python view.py key ...</code></pre>
 </ul>
 <p>The remaining arguments are the graph keys to use.</p>
 <p>Alternatively, all of the above settings can be set via environment variables or in the Flask configuration file (via the –config option).</p>
-<p>The keys are:</p>
+<p>The environment variables are:</p>
 <ul>
 <li>REDIS_HOST</li>
 <li>REDIS_PORT</li>

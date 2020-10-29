@@ -54,12 +54,12 @@
 <header id="title-block-header">
 <h1 class="title">Rediner - Named Entity Analysis in RedisGraph</h1>
 </header>
-<p>This project provides a demonstration of the use of the <a href="https://oss.redislabs.com/redisgraph/">RedidGraph</a> to store and analyze named entities (people, places, objects, etc.). The data collection involves a <a href="https://en.wikipedia.org/wiki/Named-entity_recognition">Named Entity Recognition</a> (NER) model from <a href="https://spacy.io">SpaCy</a>.</p>
-<p>The example application uses Flask and allows you to analyze blog posts and navigate the articles via the cooccurences of name entities. The architecture is a simple two-tier application where the web application uses Cypher to directly query RedisGraph.</p>
-<p>The graph in the database is constructed from the harvesting and analysis of the blog post articles throw a separate process. The metadata about the articles and the article contents are stored in RedisGraph. A NER model is applied to the content of the articles and those named entities extracted are stored in the graph in relation to the articles.</p>
+<p>This demonstrates of the use of the <a href="https://oss.redislabs.com/redisgraph/">RedisGraph</a> to store and analyze named entities (people, places, objects, etc.). The data collection involves applying a <a href="https://en.wikipedia.org/wiki/Named-entity_recognition">Named Entity Recognition</a> (NER) model from <a href="https://spacy.io">SpaCy</a> to a set of blog posts.</p>
+<p>An example application uses <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> and provides you to the ability to navigate the blog posts via the cooccurrences of the named entityies. It also provides full text search on the graph and displays the collect of named entities from the search results. The application has a simple two-tier architecture where the Flask-based web application uses <a href="https://www.opencypher.org">Cypher</a> to directly query RedisGraph.</p>
+<p>The graph is constructed from harvesting and analyzing blog post articles through a process separate from RedisGraph. The metadata about the articles and the article text are stored in RedisGraph. Separately, an NER model is applied to the content of the articles and the named entities extracted are also stored in the graph in relation to the articles.</p>
 <section id="setup" class="level1">
 <h1>Setup</h1>
-<p>All the implementation is written in Python 3. To run the code, all you will need to do is create a python environment and install the required packages:</p>
+<p>The implementation is written in Python 3. To run the code, all you will need to do is create a python environment and install the required packages:</p>
 <pre><code>pip install -r requirements.txt</code></pre>
 <p>For a quick start, see the <a href="https://github.com/redis-developer/rediner">project documentation</a> and for more detailed information, see below.</p>
 <section id="what-you-can-do-next" class="level2 tiles">
@@ -86,7 +86,7 @@
 </section>
 <section id="serverless" class="level3 tile">
 <h3 class="tile">Serverless</h3>
-<p>You can deploy the client application via serverless (e.g. AWS Lambda) <a href="serverless.html">More</a></p>
+<p>You can deploy the client application via serverless <a href="serverless.html">More</a></p>
 </section>
 </section>
 </section>

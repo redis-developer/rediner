@@ -69,7 +69,7 @@ cd $BASE</code></pre>
 <li><p>Checkout the flask-serverless project as a sibling directory:</p>
 <pre><code>git clone https://github.com/alexmilowski/flask-serverless.git</code></pre>
 <p>You should now have the <code>rediner</code> and <code>flask-serverless</code> as sibling directories.</p></li>
-<li><p>Building the build script as a docker container:</p>
+<li><p>The build script container image guarantees the deployment architecture matches for the packaged python packages. Build this image by:</p>
 <pre><code>cd rediner/serverless
 docker build . -t $DOCKERID/rediner-demo-lambda-build</code></pre></li>
 <li><p>Build the packaging via the docker image:</p>

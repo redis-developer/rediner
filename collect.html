@@ -54,7 +54,7 @@
 <header id="title-block-header">
 <h1 class="title">Collecting Data</h1>
 </header>
-<p>Blogs are articles that are typically published with a certain minimum amount of metadata like the date published, title, author, keywords, etc. Modern blog posts are often encoded with schema.org annotations (see <a href="https://schema.org/BlogPosting">BlogPosting</a>) as well as other metadata facets encoded in various ways. As such, in the raw HTML for the blog article web page there is both metadata and the article body that can be extracted with a modicum of effort.</p>
+<p>Blogs are articles that are typically published with a certain minimum amount of metadata like the date published, title, author, keywords, etc. Modern blog posts are often encoded with <a href="https://schema.org/">schema.org</a> annotations (see <a href="https://schema.org/BlogPosting">BlogPosting</a>) as well as other metadata facets encoded in various ways. As such, within the raw HTML for the blog article web page there is both metadata and the article body that can be extracted with a modicum of effort.</p>
 <section id="crawling-blog-articles" class="level2">
 <h2>Crawling Blog Articles</h2>
 <p>A simple crawler can be invoked to visit each blog article web page. The crawler assumes the blog is structure in one of two ways:</p>
@@ -65,7 +65,12 @@
 <p>The crawler can be invoked by:</p>
 <pre><code>python -m rediner.blog url ...</code></pre>
 <p>From the starting URLs the crawler will inspect the page for articles. If the <code>--same</code> option is specified, it will assume the blog is structured via method (2) above. Otherwise, the blog is assumed to be structured with index pages and separate blog article pages.</p>
-<p>The defaults are will structured to rebuild the datasets for the blogs shown in the demo. That is, the crawler knows how to traverse and extract the articles from: <code>http://www.milowski.com/</code>, <code>https://redislabs.com/company-blog/</code>, and <code>https://redislabs.com/tech-blog/</code>.</p>
+<p>The defaults are structured to rebuild the datasets for the blogs shown in the demo. That is, the crawler knows how to traverse and extract the articles from:</p>
+<ul>
+<li><a href="https://www.milowski.com/"><code>https://www.milowski.com/</code></a></li>
+<li><a href="https://redislabs.com/company-blog/"><code>https://redislabs.com/company-blog/</code></a></li>
+<li><a href="https://redislabs.com/tech-blog/"><code>https://redislabs.com/tech-blog/</code></a></li>
+</ul>
 <p>To run the crawler on other blogs or adjust how the output is handled, the following options may be useful:</p>
 <ul>
 <li><code>--verbose</code> - Indicates that the process should be verbose and output status and debugging information.</li>
@@ -81,13 +86,13 @@
 <li><code>--stub</code> - the stub for the generated filename.</li>
 <li><code>--dir</code> - the directory in which to store the output files</li>
 </ul>
-<p>For example, the explicit parameters for <code>http://www.milowski.com/</code> are:</p>
+<p>For example, the explicit parameters for <code>https://www.milowski.com/</code> are:</p>
 <pre><code>python -m rediner.blog --store --dir out \
 --entry &quot;article[typeof]&quot; \
 --next &quot;header .article-navigation a[title=&#39;preceding entry&#39;]&quot; \
 --remove pre --remove code \
 --entry-container &quot;article[resource]&quot; \
-http://www.milowski.com/</code></pre>
+https://www.milowski.com/</code></pre>
 </section>
 <section id="extracting-named-entities" class="level2">
 <h2>Extracting Named Entities</h2>

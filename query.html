@@ -56,9 +56,9 @@
 </header>
 <section id="cooccurrences-of-named-entities" class="level2">
 <h2>Cooccurrences of Named Entities</h2>
-<p>The main analysis demonstrated in the demo application is the cooccurrences of named entities:</p>
+<p>The main analysis that is shown in the demo application is the cooccurrences of named entities:</p>
 <ul>
-<li><p>The named entities that cooccur on in an article:</p>
+<li><p>The named entities that cooccur in an article:</p>
 <pre><code>MATCH (e1:NamedEntity)&lt;-[:uses]-(a)-[:uses]-&gt;(e2:NamedEntity)
 WHERE e1 &lt;&gt; e2 AND e1.text &lt; e1.text
 RETURN e1.text, e2.text</code></pre></li>

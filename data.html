@@ -83,16 +83,16 @@
 </section>
 <section id="scaling" class="level2">
 <h2>Scaling</h2>
-<p>The main challenge of scalability is the number of named entities. While the SpaCy NER model provides a robust detection of named entities, it does have issues with entity word boundaries. As such, sometimes the same named entity is prefix or suffixed with extra words like stop words or other qualifiers. Pruning the named entities via additional algorithms should provide better scalability for processing a large corpus.</p>
+<p>The main challenge of scalability is the number of named entities. While the SpaCy NER model provides a robust detection of named entities, it does have issues with entity word boundaries. As such, sometimes the same named entity is prefixed or suffixed with extra words like stop words or other qualifiers. Pruning the named entities via additional algorithms should provide better scalability when processing a large corpus.</p>
 </section>
 <section id="database" class="level2">
 <h2>Database</h2>
-<p>This project relies on RedisGraph and the demo relies on various indexes.</p>
+<p>This project relies on RedisGraph and the demo relies on various indexes. These indexes are created by a separate program called <a href="https://github.com/redis-developer/rediner/blob/main/demo/setupdb.py"><code>setupdb.py</code></a> and can be run on any graph key.</p>
 <p>You can run a local RedisGraph instance by:</p>
 <pre><code>docker run -p 6379:6379 redislabs/redisgraph:latest</code></pre>
 <p>And setup the index per key:</p>
 <pre><code>python demo/setupdb.py milowski.com</code></pre>
-<p>The above program accepts multiple graph keys:</p>
+<p>The setup program also accepts multiple graph keys:</p>
 <pre><code>python demo/setupdb.py milowski.com redislabs-blog</code></pre>
 </section>
 </section>
