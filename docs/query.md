@@ -6,11 +6,11 @@ toc: false
 
 ## Cooccurrences of Named Entities
 
-The main analysis demonstrated in the demo application is the cooccurrences
+The main analysis that is shown in the demo application is the cooccurrences
 of named entities:
 
 
-* The named entities that cooccur on in an article:
+* The named entities that cooccur in an article:
 
   ```
   MATCH (e1:NamedEntity)<-[:uses]-(a)-[:uses]->(e2:NamedEntity)
